@@ -35,7 +35,8 @@ import auth from 'firebase/auth'
       loginWithGoogle() {
         firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
         .then((res)=>{
-          console.log(res.user);
+          this.$store.dispatch('setUser', res.user)
+          this.$router.push('/')          
         })
       },
     },

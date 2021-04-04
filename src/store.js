@@ -4,12 +4,20 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const state = {
-  currentUser: 'Joshua Yeh'
+  currentUser: null
 }
 
-const mutations = {}
+const mutations = {
+  SET_USER(state,user){
+    state.currentUser = user
+  }
+}
 
-const actions = {}
+const actions = {
+  setUser({commit},user){
+    commit('SET_USER',user)
+  }
+}
 
 const getters = {
   currentUser: state => state.currentUser
