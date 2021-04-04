@@ -7,27 +7,44 @@
 
     <div class="container-fluid">
       <div class="row mt-5">
-          <div class="col text-center">
-            <button class="btn btn-outline-danger btn-lg">Login with Google</button>
-          </div>
+        <div class="col text-center">
+          <button
+            @click="loginWithGoogle"
+            class="btn btn-outline-danger btn-lg"
+          >
+            Login with Google
+          </button>
+        </div>
       </div>
       <div class="row mt-5">
-          <div class="col text-center">
-            <button class="btn btn-outline-info btn-lg">Login with Twitter</button>
-          </div>
+        <div class="col text-center">
+          <button class="btn btn-outline-info btn-lg">
+            Login with Twitter
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import auth from 'firebase/auth'
   export default {
     name: "login",
+    methods: {
+      loginWithGoogle() {
+        firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        .then((res)=>{
+          console.log(res.user);
+        })
+      },
+    },
   };
 </script>
 
 <style>
-  .btn, .jumbotron {
-    border-radius: 0px;
-  }
+.btn,
+.jumbotron {
+  border-radius: 0px;
+}
 </style>
