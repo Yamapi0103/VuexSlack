@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import firebase from 'firebase/app'
 import store from './store'
+import auth from 'firebase/auth'
 
 Vue.config.productionTip = false
 
@@ -21,11 +22,18 @@ Vue.config.productionTip = false
   firebase.initializeApp(firebaseConfig);
   
   window.firebase = firebase;
+
+  const unsubscribe = firebase.auth().onAuthStateChanged(user=>{
+    store.dispatch('setUser', user)
+    new Vue({
+      el: '#app',
+      store,
+      router,
+      components: { App },
+      template: '<App/>'
+    })
+    // recursion - this function calls itself on auth state change
+    unsubscribe()
+  })
+
 /* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  store,
-  router,
-  components: { App },
-  template: '<App/>'
-})
