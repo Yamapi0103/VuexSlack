@@ -37,12 +37,14 @@
 
 <script>
   import auth from "firebase/auth";
+  import database from "firebase/database";
   export default {
     name: "login",
     data() {
       return {
         errors: [],
         loading: false,
+        usersRef: firebase.database().ref("users"),
       };
     },
     computed: {
@@ -54,10 +56,12 @@
       loginWithGoogle() {
         this.loading = true;
         this.errors = [];
-        firebase 
+        firebase
           .auth()
           .signInWithPopup(new firebase.auth.GoogleAuthProvider())
           .then((res) => {
+            // pass user to save in db
+            this.saveUsersToUsersRef(res.user);
             this.$store.dispatch("setUser", res.user);
             this.$router.push("/");
           })
@@ -65,6 +69,13 @@
             this.errors.push(err.message);
             this.loading = false;
           });
+      },
+      // save user to database
+      saveUsersToUsersRef(user) {
+        return this.usersRef.child(user.uid).set({
+          name: user.displayName,
+          avatar: user.photoURL,
+        });
       },
     },
   };
