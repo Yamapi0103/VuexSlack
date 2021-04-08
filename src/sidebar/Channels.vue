@@ -3,6 +3,18 @@
     <button class="btn btn-outline-primary" @click="openModal">
       Add Channel
     </button>
+
+    <!-- show list of channels -->
+    <div class="mt-4">
+      <button
+        v-for="(channel, index) in channels"
+        :key="index"
+        class="list-group-item list-group-item-action"
+        type="button"
+      >
+        {{ channel.name }}
+      </button>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="channelModal">
       <div class="modal-dialog modal-dialog-centered" role="document">
@@ -69,6 +81,7 @@
     data() {
       return {
         new_channel: "",
+        channels: [],
         errors: [],
         channelsRef: firebase.database().ref("channels"),
       };
@@ -83,8 +96,9 @@
         $("#channelModal").appendTo("body").modal("show");
       },
       addChannel() {
+        let errors = [];
         let key = this.channelsRef.push().key;
-        console.log('newly creating channel key: ', key)
+        console.log("newly creating channel key: ", key);
 
         let newChannel = { id: key, name: this.new_channel };
         this.channelsRef
@@ -98,6 +112,21 @@
             this.errors.push(err.message);
           });
       },
+      addListeners() {
+        this.channelsRef.on("child_added", (snapshot) => {
+          console.log("listening channelRef on child_add: ", snapshot.val());
+          this.channels.push(snapshot.val());
+        });
+      },
+      detachListeners() {
+        this.channelsRef.off();
+      },
+    },
+    mounted() {
+      this.addListeners();
+    },
+    beforeDestroy() {
+      this.detachListeners();
     },
   };
 </script>
