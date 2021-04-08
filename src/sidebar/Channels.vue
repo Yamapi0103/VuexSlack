@@ -7,10 +7,12 @@
     <!-- show list of channels -->
     <div class="mt-4">
       <button
+        @click="changeChannel(channel)"
         v-for="(channel, index) in channels"
         :key="index"
         class="list-group-item list-group-item-action"
         type="button"
+        :class="{ active: isActiveChannel(channel) }"
       >
         {{ channel.name }}
       </button>
@@ -76,17 +78,20 @@
 </template>
 <script>
   import database from "firebase/database";
+  import { mapGetters } from "vuex";
   export default {
     name: "channels",
     data() {
       return {
         new_channel: "",
-        channels: [],
         errors: [],
         channelsRef: firebase.database().ref("channels"),
+        channels: [],
+        channel: null,
       };
     },
     computed: {
+      ...mapGetters(["currentChannel"]),
       hasErrors() {
         return this.errors.length > 0;
       },
@@ -116,10 +121,24 @@
         this.channelsRef.on("child_added", (snapshot) => {
           console.log("listening channelRef on child_add: ", snapshot.val());
           this.channels.push(snapshot.val());
+          if (this.channels.length > 0) {
+            this.channel = this.channels[0];
+            console.log(
+              "🚀 ~ file: Channels.vue ~ line 124 ~ addListeners ~ this.channel",
+              this.channel
+            );
+            this.$store.dispatch("setCurrentChannel", this.channel);
+          }
         });
       },
       detachListeners() {
         this.channelsRef.off();
+      },
+      isActiveChannel(channel) {
+        return channel.id === this.currentChannel.id;
+      },
+      changeChannel(channel) {
+        this.$store.dispatch("setCurrentChannel", channel);
       },
     },
     mounted() {
