@@ -119,14 +119,9 @@
       },
       addListeners() {
         this.channelsRef.on("child_added", (snapshot) => {
-          console.log("listening channelRef on child_add: ", snapshot.val());
           this.channels.push(snapshot.val());
           if (this.channels.length > 0) {
             this.channel = this.channels[0];
-            console.log(
-              "🚀 ~ file: Channels.vue ~ line 124 ~ addListeners ~ this.channel",
-              this.channel
-            );
             this.$store.dispatch("setCurrentChannel", this.channel);
           }
         });

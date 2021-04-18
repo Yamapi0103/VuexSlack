@@ -22,7 +22,7 @@ Vue.config.productionTip = false
   firebase.initializeApp(firebaseConfig);
   
   window.firebase = firebase;
-
+  window.store = store // 方便在console debug
   const unsubscribe = firebase.auth().onAuthStateChanged(user=>{
     store.dispatch('setUser', user)
     new Vue({
