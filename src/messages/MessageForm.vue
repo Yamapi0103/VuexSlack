@@ -48,7 +48,7 @@ import {mapGetters} from 'vuex'
         let newMessage = {
           content: this.message,
           timestamp: firebase.database.ServerValue.TIMESTAMP,
-          use:{
+          user:{
             name: this.currentUser.displayName,
             avatar: this.currentUser.photoURL,
             id: this.currentUser.uid
