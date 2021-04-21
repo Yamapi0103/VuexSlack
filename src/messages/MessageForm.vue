@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="messageform">
-      <form class="d-flex">
+      <form @submit.prevent="sendMessage" class="d-flex">
         <div class="input-group mb-3">
           <input
             v-model.trim="message"
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+  import { mapGetters } from "vuex";
   export default {
     name: "message-form",
 
@@ -41,30 +41,38 @@ import {mapGetters} from 'vuex'
       };
     },
     computed: {
-      ...mapGetters(['currentChannel','currentUser'])
+      ...mapGetters(["currentChannel", "currentUser"]),
     },
     methods: {
       sendMessage() {
         let newMessage = {
           content: this.message,
           timestamp: firebase.database.ServerValue.TIMESTAMP,
-          user:{
+          user: {
             name: this.currentUser.displayName,
             avatar: this.currentUser.photoURL,
-            id: this.currentUser.uid
+            id: this.currentUser.uid,
+          },
+        };
+
+        if (this.currentChannel !== null) {
+          if (this.message.length > 0) {
+            this.$parent.messageRef
+              .child(this.currentChannel.id)
+              .push()
+              .set(newMessage)
+              .then(() => {
+                this.$nextTick(() => {
+                  $("html, body").scrollTop($(document).height());
+                });
+              })
+              .catch((err) => {
+                this.errors.push(err.message);
+              });
+            this.message = "";
           }
         }
-        
-        if(this.currentChannel !== null){
-          if(this.message.length>0){
-            this.$parent.messageRef.child(this.currentChannel.id).push().set(newMessage)
-            .catch((err)=>{
-              this.errors.push(err.message)
-            })
-            this.message = ''
-          }
-        }
-      }, 
+      },
     },
   };
 </script>

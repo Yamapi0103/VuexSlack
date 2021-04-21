@@ -32,7 +32,8 @@
       ...mapGetters(["currentChannel"]),
     },
     watch: {
-      currentChannel: function (n) { // 當前channel被設定時  觸發監聽messages
+      currentChannel: function (n) {
+        // 當前channel被設定時  觸發監聽messages
         this.messages = [];
         this.addListeners();
         this.channel = n;
@@ -45,6 +46,9 @@
           .child(this.currentChannel.id)
           .on("child_added", (snapshot) => {
             this.messages.push(snapshot.val());
+            this.$nextTick(() => {
+              $("html, body").scrollTop($(document).height());
+            });
           });
       },
       detachListeners() {
