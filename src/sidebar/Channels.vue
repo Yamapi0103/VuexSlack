@@ -133,6 +133,7 @@
         return channel.id === this.currentChannel.id;
       },
       changeChannel(channel) {
+        this.$store.dispatch("setPrivate", false);
         this.$store.dispatch("setCurrentChannel", channel);
       },
     },

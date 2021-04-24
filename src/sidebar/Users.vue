@@ -2,24 +2,32 @@
   <div>
     <div class="text-light">
       <h4>Users</h4>
-      <ul class="nav flex-column">
-        <li
+      <div class="mt-4">
+        <button
           v-for="user in users"
           :key="user.uid"
-          @click.prevent="chanheChannel(user)"
+          class="list-group-item list-group-item-action"
+          type="button"
+          :class="{ active: isActive(user) }"
+          @click.prevent="changeChannel(user)"
         >
+          <span
+            :class="{
+              'fa fa-circle online': isOnline(user),
+              'fa fa-circle offline': !isOnline(user),
+            }"
+          ></span>
+
           <span>
-            <img :src="user.avatar" height="20" class="img rounded-circle" />
+            <img class="img rounded-circle" :src="user.avatar" height="20" />
             <span
-              :class="{
-                'text-primary': isOnline(user),
-                'text-danger': !isOnline(user),
-              }"
-              ><a href="#">{{ user.name }}</a></span
+              ><a :class="{ 'text-light': isActive(user) }" href="#">{{
+                user.name
+              }}</a></span
             >
           </span>
-        </li>
-      </ul>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -38,7 +46,7 @@
       };
     },
     computed: {
-      ...mapGetters(["currentUser"]),
+      ...mapGetters(["currentUser", "currentChannel"]),
     },
     methods: {
       addListeners() {
@@ -91,10 +99,16 @@
         this.connectedRef.off();
         this.presenceRef.off();
       },
-      chanheChannel(user) {
+      changeChannel(user) {
         let channelId = this.getChannelId(user.uid);
         let channel = { id: channelId, name: user.name };
+        this.$store.dispatch("setPrivate", true);
         this.$store.dispatch("setCurrentChannel", channel);
+      },
+      isActive(user) {
+        console.log(user);
+        let channelId = this.getChannelId(user.uid);
+        return channelId === this.currentChannel.id;
       },
       getChannelId(userId) {
         return userId < this.currentUser.uid
@@ -110,3 +124,11 @@
     },
   };
 </script>
+<style scoped>
+.online {
+  color: green;
+}
+.offline {
+  color: red;
+}
+</style>
