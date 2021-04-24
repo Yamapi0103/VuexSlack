@@ -3,7 +3,11 @@
     <div class="text-light">
       <h4>Users</h4>
       <ul class="nav flex-column">
-        <li v-for="user in users" :key="user.uid">
+        <li
+          v-for="user in users"
+          :key="user.uid"
+          @click.prevent="chanheChannel(user)"
+        >
           <span>
             <img :src="user.avatar" height="20" class="img rounded-circle" />
             <span
@@ -11,7 +15,7 @@
                 'text-primary': isOnline(user),
                 'text-danger': !isOnline(user),
               }"
-              >{{ user.name }}</span
+              ><a href="#">{{ user.name }}</a></span
             >
           </span>
         </li>
@@ -41,10 +45,10 @@
         this.usersRef.on("child_added", (snapshot) => {
           console.log(snapshot);
           if (this.currentUser.uid !== snapshot.key) {
-          let user = snapshot.val();
-          user["uid"] = snapshot.key;
-          user["status"] = "offline";
-          this.users.push(user);
+            let user = snapshot.val();
+            user["uid"] = snapshot.key;
+            user["status"] = "offline";
+            this.users.push(user);
           }
         });
 
@@ -86,6 +90,16 @@
         this.usersRef.off();
         this.connectedRef.off();
         this.presenceRef.off();
+      },
+      chanheChannel(user) {
+        let channelId = this.getChannelId(user.uid);
+        let channel = { id: channelId, name: user.name };
+        this.$store.dispatch("setCurrentChannel", channel);
+      },
+      getChannelId(userId) {
+        return userId < this.currentUser.uid
+          ? userId + "/" + this.currentUser.uid
+          : this.currentUser.uid + "/" + userId;
       },
     },
     mounted() {
